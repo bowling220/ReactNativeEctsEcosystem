@@ -26,11 +26,12 @@ const Page1Screen = () => {
             navigation.navigate('DailyDiscussion');
         }
     };
+
     React.useLayoutEffect(() => {
-      navigation.setOptions({
-          headerLeft: () => null,
-      });
-  }, [navigation]);
+        navigation.setOptions({
+            headerLeft: () => null,
+        });
+    }, [navigation]);
 
     const handleBackPress = () => {
         if (currentUrlIndex > 0) {
@@ -75,25 +76,11 @@ const Page1Screen = () => {
                 onNavigationStateChange={handleNavigationStateChange}
                 onError={handleWebViewError}
             />
-            {/* Custom bottom navigation */}
-            <View style={styles.bottomNavigation}>
-                <TouchableOpacity style={styles.tabButton} onPress={() => navigateToPage('Home')}>
-                    <AntDesign name="home" size={24} color="white" />
-                    <Text style={styles.tabText}>Home</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tabButton} onPress={() => navigateToPage('Grades')}>
-                    <AntDesign name="profile" size={24} color="white" />
-                    <Text style={styles.tabText}>Grades</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tabButton} onPress={() => handlePagePress('Website')}>
-                    <AntDesign name="earth" size={24} color="white" />
-                    <Text style={styles.tabText}>Website</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tabButton} onPress={() => navigateToPage('DailyDiscussion')}>
-                    <AntDesign name="message1" size={24} color="white" />
-                    <Text style={styles.tabText}>Daily Discussion</Text>
-                </TouchableOpacity>
-            </View>
+            {/* Hamburger Menu Button */}
+            <TouchableOpacity style={styles.menuButton} onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+    <AntDesign name="menuunfold" size={24} color="black" />
+</TouchableOpacity>
+
             {/* Back button for web page history */}
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
                 <AntDesign name="arrowleft" size={24} color="black" />
@@ -107,25 +94,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
-    bottomNavigation: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      backgroundColor: 'black',
-      paddingVertical: 10,
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-  },
-  tabButton: {
-      alignItems: 'center',
-  },
-  tabText: {
-      color: 'white',
-      fontSize: 12,
-      marginTop: 5,
-
+    menuButton: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        backgroundColor: 'transparent',
+        padding: 10,
+        zIndex: 1, // Ensure the button is above the WebView
     },
     backButton: {
         position: 'absolute',

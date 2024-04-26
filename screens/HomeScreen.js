@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 10,
         left: 10,
-        backgroundColor: 'green', // Change background color to green
+        backgroundColor: 'rgba(0, 128, 0, 1)', // Transparent green
         padding: 10,
         borderRadius: 20,
         zIndex: 1,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
         left: 0,
         bottom: 0,
         width: '50%',  // Adjust the width as needed
-        backgroundColor: 'green', // Change background color to green
+        backgroundColor: 'rgba(0, 128, 0, 1)', // Transparent green
         padding: 20,
         elevation: 5,
     },
