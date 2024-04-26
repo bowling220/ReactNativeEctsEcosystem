@@ -1,76 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { fetchPosts } from './api';
-import PostCard from './PostCard';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './screens/HomeScreen';
+import Page1Screen from './screens/Page1Screen';
+import Page2Screen from './screens/Page2Screen';
+import DailyDiscussion from './screens/DailyDiscussion';
+import ProfileScreen from './screens/ProfileScreen'; 
+import CreateAccountScreen from './screens/CreateAccountScreen';
+import ProfileSettings from './screens/ProfileSettings'; 
 
-const HomeScreen = ({ navigation }) => {
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    const loadPosts = async () => {
-      const data = await fetchPosts();
-      setPosts(data.channel.item);
-    };
-    loadPosts();
-  }, []);
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.menuButton}>
-          <Text style={styles.menuButtonText}>Menu</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Home</Text>
-      </View>
-      {posts.length > 0 && (
-        <ScrollView>
-          {posts.map((post, index) => (
-            <PostCard key={index} title={post.title} content={post['content-encoded']} />
-          ))}
-        </ScrollView>
-      )}
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center', // Center items horizontally
-    padding: 15,
-    backgroundColor: '#f0f0f0',
-    marginTop: 10, // Move the header down by 10 units
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginLeft: 'auto', // Move the text to the right edge
-    marginRight: 160, // Add some space to the right of the text
-  },
-  menuButton: {
-    marginRight: 10, // Add some space to the left of the button
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    backgroundColor: 'lightblue',
-  },
-  menuButtonText: {
-    fontSize: 16,
-    color: 'blue',
-    fontWeight: 'bold',
-  },
-});
+const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <HomeScreen />
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Ecosystem Website" component={Page1Screen} />
+        <Stack.Screen name="Infinite Campus" component={Page2Screen} />
+        <Stack.Screen name="DailyDiscussion" component={DailyDiscussion} />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="Login" component={ProfileScreen} />
+        <Stack.Screen name="CreateAccount" component={CreateAccountScreen} />
+        <Stack.Screen name="ProfileSettings" component={ProfileSettings} /> 
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
