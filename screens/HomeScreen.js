@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { fetchPosts } from '../services/api';
 import PostCard from '../components/PostCard';
 import { AntDesign } from '@expo/vector-icons';
-import { authenticateUser } from '../services/AuthService'; // Import authenticateUser
 
-
-
-const HomeScreen = ({ route }) => {
+const HomeScreen = () => {
     const navigation = useNavigation();
     const [posts, setPosts] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState([]);
@@ -16,11 +13,8 @@ const HomeScreen = ({ route }) => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [profileImage, setProfileImage] = useState('https://i.natgeofe.com/n/4f5aaece-3300-41a4-b2a8-ed2708a0a27c/domestic-dog_thumb_square.jpg'); // Default base image
 
     useEffect(() => {
-        
         const loadPosts = async () => {
             try {
                 setLoading(true);
@@ -39,21 +33,6 @@ const HomeScreen = ({ route }) => {
         };
         loadPosts();
     }, [page]);
-    
-    useEffect(() => {
-        const checkAuthentication = async () => {
-            try {
-                const isAuthenticated = await authenticateUser();
-                console.log('Is authenticated:', isAuthenticated);
-                setIsLoggedIn(isAuthenticated);
-            } catch (error) {
-                console.error('Error authenticating user:', error);
-            }
-        };
-    
-        checkAuthentication();
-    }, []);
-    
 
     useEffect(() => {
         if (selectedCategory) {
@@ -74,39 +53,14 @@ const HomeScreen = ({ route }) => {
         } else if (pageName === 'Grades') {
             navigation.navigate('Infinite Campus');
         } else if (pageName === 'Website') {
-            navigation.navigate('Ecosystem Website');
+            navigation.navigate('Ecosystem Website'); 
         } else if (pageName === 'DailyDiscussion') {
             navigation.navigate('DailyDiscussion');
         }
     };
 
-    const handleImagePress = () => {
-        if (isLoggedIn) {
-            navigation.navigate('ProfileSettings');
-        } else {
-            navigation.navigate('ProfileScreen');
-        }
-    };
-    
-    useEffect(() => {
-        if (route.params?.profileImage) {
-            setProfileImage(route.params.profileImage);
-        }
-    }, [route.params?.profileImage]);
-
     return (
         <View style={styles.container}>
-            {/* Profile Image and Title */}
-            <View style={styles.profileContainer}>
-                <TouchableOpacity onPress={handleImagePress}>
-                    <Image
-                        source={{ uri: profileImage }}
-                        style={styles.profileImage}
-                    />
-                </TouchableOpacity>
-                <Text style={styles.title}>Ects CMP Ecosystem</Text>
-            </View>
-
             {/* Post List */}
             <ScrollView style={styles.scrollView}>
                 {filteredPosts.map((post, index) => (
@@ -156,22 +110,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         padding: 10,
-    },
-    profileContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 20,
-    },
-    profileImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 20,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
     },
     scrollView: {
         flex: 1,
