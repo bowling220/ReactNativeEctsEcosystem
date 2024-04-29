@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useNavigation } from '@react-navigation/native';
 import { fetchPosts } from '../services/api';
 import PostCard from '../components/PostCard';
-import { FontAwesome } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -13,7 +13,6 @@ const HomeScreen = () => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
         const loadPosts = async () => {
@@ -23,8 +22,12 @@ const HomeScreen = () => {
                 if (data.channel.item.length === 0) {
                     setHasMore(false);
                 } else {
-                    setPosts([...posts, ...data.channel.item]);
-                    setFilteredPosts([...posts, ...data.channel.item]);
+                    const extractedPosts = data.channel.item.map(post => {
+                        const imageUrl = extractImageUrl(post['content-encoded']);
+                        return { ...post, imageUrl };
+                    });
+                    setPosts(prevPosts => [...prevPosts, ...extractedPosts]);
+                    setFilteredPosts(prevPosts => [...prevPosts, ...extractedPosts]);
                 }
             } catch (error) {
                 console.error('Error fetching posts:', error);
@@ -60,22 +63,15 @@ const HomeScreen = () => {
         }
     };
 
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
+    const extractImageUrl = (contentEncoded) => {
+        const regex = /<img[^>]+src="([^">]+)/g;
+        const match = regex.exec(contentEncoded);
+        return match && match.length >= 2 ? match[1] : null;
     };
+    
 
     return (
         <View style={styles.container}>
-            {/* Hamburger Menu Button */}
-            <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
-                <FontAwesome name={menuOpen ? 'times' : 'bars'} size={24} color="black" />
-            </TouchableOpacity>
-
-            {/* Title */}
-            <View style={styles.titleContainer}>
-                <Text style={styles.title}>Ects CMP Ecosystem</Text>
-            </View>
-
             {/* Post List */}
             <ScrollView style={styles.scrollView}>
                 {filteredPosts.map((post, index) => (
@@ -97,23 +93,25 @@ const HomeScreen = () => {
                 )}
             </ScrollView>
 
-            {/* Hamburger Menu */}
-            {menuOpen && (
-                <View style={styles.menuContainer}>
-                    <TouchableOpacity style={styles.menuItem} onPress={() => handlePagePress('Home')}>
-                        <Text style={styles.menuText}>Home</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem} onPress={() => handlePagePress('Grades')}>
-                        <Text style={styles.menuText}>Grades</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem} onPress={() => handlePagePress('Website')}>
-                        <Text style={styles.menuText}>Website</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem} onPress={() => handlePagePress('DailyDiscussion')}>
-                        <Text style={styles.menuText}>Daily Discussion</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+            {/* Custom Bottom Navigation */}
+            <View style={styles.bottomNavigation}>
+                <TouchableOpacity style={styles.tabButton} onPress={() => handlePagePress('Home')}>
+                    <AntDesign name="home" size={24} color="white" />
+                    <Text style={styles.tabText}>Home</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.tabButton} onPress={() => handlePagePress('Grades')}>
+                    <AntDesign name="profile" size={24} color="white" />
+                    <Text style={styles.tabText}>Grades</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.tabButton} onPress={() => handlePagePress('Website')}>
+                    <AntDesign name="earth" size={24} color="white" />
+                    <Text style={styles.tabText}>Website</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.tabButton} onPress={() => handlePagePress('DailyDiscussion')}>
+                    <AntDesign name="message1" size={24} color="white" />
+                    <Text style={styles.tabText}>Daily Discussion</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -123,15 +121,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         padding: 10,
-    },
-    titleContainer: {
-        alignItems: 'center',
-        marginTop: 20,
-        marginBottom: 10,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
     },
     scrollView: {
         flex: 1,
@@ -148,32 +137,25 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    menuButton: {
-        position: 'absolute',
-        top: 10,
-        left: 10,
-        backgroundColor: 'rgba(0, 128, 0, 1)', // Transparent green
-        padding: 10,
-        borderRadius: 20,
-        zIndex: 1,
-    },
-    menuContainer: {
-        position: 'absolute',
-        top: 50, // Adjust the top value for spacing
-        left: 0,
-        bottom: 0,
-        width: '50%',  // Adjust the width as needed
-        backgroundColor: 'rgba(0, 128, 0, 1)', // Transparent green
-        padding: 20,
-        elevation: 5,
-    },
-    menuItem: {
+    bottomNavigation: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        backgroundColor: 'black',
         paddingVertical: 10,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
     },
-    menuText: {
-        fontSize: 18,
+    tabButton: {
+        alignItems: 'center',
+    },
+    tabText: {
+        color: 'white',
+        fontSize: 12,
+        marginTop: 5,
     },
 });
-
 
 export default HomeScreen;

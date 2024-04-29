@@ -2,14 +2,12 @@ import React, { useRef } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, PanResponder, Animated, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { AntDesign } from '@expo/vector-icons'; // Import icons from Expo vector-icons
-import { useNavigation } from '@react-navigation/native';
+import { HeaderBackButton } from '@react-navigation/stack';
 
-const DailyDiscussionFragment = () => {
-    const navigation = useNavigation();
+const DailyDiscussionFragment = ({ navigation }) => {
     const [webViewOpacity] = React.useState(new Animated.Value(1));
     const webViewRef = useRef(null);
     const [isLoading, setIsLoading] = React.useState(false);
-    const [menuOpen, setMenuOpen] = React.useState(false);
 
     const handlePagePress = (pageName) => {
         if (pageName === 'Home') {
@@ -43,13 +41,14 @@ const DailyDiscussionFragment = () => {
         })
     ).current;
 
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerLeft: () => null,
+        });
+    }, [navigation]);
+
     return (
         <View style={{ flex: 1 }}>
-            {/* Hamburger Menu Button */}
-            <TouchableOpacity style={styles.menuButton} onPress={() => setMenuOpen(!menuOpen)}>
-                <AntDesign name={menuOpen ? 'close' : 'menuunfold'} size={24} color="black" />
-            </TouchableOpacity>
-
             <Animated.View style={{ flex: 1, opacity: webViewOpacity }} {...panResponder.panHandlers}>
                 <WebView
                     originWhitelist={['*']}
@@ -80,58 +79,55 @@ const DailyDiscussionFragment = () => {
                     </View>
                 )}
             </Animated.View>
-            {menuOpen && (
-                <View style={styles.menuContainer}>
-                    <TouchableOpacity style={styles.menuItem} onPress={() => handlePagePress('Home')}>
-                        <Text style={styles.menuText}>Home</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem} onPress={() => handlePagePress('Grades')}>
-                        <Text style={styles.menuText}>Grades</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem} onPress={() => handlePagePress('Website')}>
-                        <Text style={styles.menuText}>Website</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem} onPress={() => handlePagePress('DailyDiscussion')}>
-                        <Text style={styles.menuText}>Daily Discussion</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+            <View style={styles.bottomNavigation}>
+                <TouchableOpacity style={styles.tabButton} onPress={() => handlePagePress('Home')}>
+                    <AntDesign name="home" size={24} color="white" />
+                    <Text style={styles.tabText}>Home</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.tabButton} onPress={() => handlePagePress('Grades')}>
+                    <AntDesign name="profile" size={24} color="white" />
+                    <Text style={styles.tabText}>Grades</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.tabButton} onPress={() => handlePagePress('Website')}>
+                    <AntDesign name="earth" size={24} color="white" />
+                    <Text style={styles.tabText}>Website</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.tabButton} onPress={() => handlePagePress('DailyDiscussion')}>
+                    <AntDesign name="message1" size={24} color="white" />
+                    <Text style={styles.tabText}>Daily Discussion</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    bottomNavigation: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        backgroundColor: 'black',
+        paddingVertical: 10,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
+    tabButton: {
+        alignItems: 'center',
+    },
+    tabText: {
+        color: 'white',
+        fontSize: 12,
+        marginTop: 5,
+    },
     loadingContainer: {
         ...StyleSheet.absoluteFill,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
     },
-    menuButton: {
-        position: 'absolute',
-        top: 10,
-        left: 10,
-        backgroundColor: 'transparent',
-        padding: 10,
-        zIndex: 1,
-    },
-    menuContainer: {
-        position: 'absolute',
-        top: 50, // Adjust the top value for spacing
-        left: 0,
-        bottom: 0,
-        width: '50%',  // Adjust the width as needed
-        backgroundColor: 'rgba(0, 128, 0, 0.9)', // Transparent green
-        padding: 20,
-        elevation: 5,
-    },
-    menuItem: {
-        paddingVertical: 10,
-    },
-    menuText: {
-        color: 'white',
-        fontSize: 18,
-    },
 });
 
 export default DailyDiscussionFragment;
+ 
